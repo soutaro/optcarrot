@@ -179,7 +179,7 @@ module Optcarrot
 
     def sprite_dma(addr, sp_ram)
       256.times {|i| sp_ram[i] = @ram[addr + i] }
-      64.times {|i| sp_ram[i * 4 + 2] &= 0xe3 }
+      64.times {|i| sp_ram[i * 4 + 2] = 0xe3 if spram[i * 4 + 2] }
     end
 
     def boot

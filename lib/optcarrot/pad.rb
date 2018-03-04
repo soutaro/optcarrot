@@ -36,11 +36,11 @@ module Optcarrot
     # APIs
 
     def keydown(pad, btn)
-      @pads[pad].buttons |= 1 << btn
+      @pads[pad].buttons = (1 << btn) unless @pads[pad].buttons
     end
 
     def keyup(pad, btn)
-      @pads[pad].buttons &= ~(1 << btn)
+      @pads[pad].buttons = ~(1 << btn) if @pads[pad].buttons
     end
   end
 
