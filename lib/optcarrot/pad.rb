@@ -87,6 +87,8 @@ module Optcarrot
       state
     end
 
+    # @dynamic buttons
+    # @dynamic buttons=
     attr_accessor :buttons
   end
 end
