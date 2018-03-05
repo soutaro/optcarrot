@@ -41,7 +41,7 @@ module Optcarrot
         level0, level1 = [[-0.12, 0.40], [0.00, 0.68], [0.31, 1.00], [0.72, 1.00]][level]
         level0 = level1 if color == 0x00
         level1 = level0 if color == 0x0d
-        level0 = level1 = 0 if color >= 0x0e
+        level0 = level1 = 0.0 if color >= 0x0e
         y = (level1 + level0) * 0.5
         s = (level1 - level0) * 0.5
         iq = Complex.polar(s, Math::PI / 6 * (color - 3))
