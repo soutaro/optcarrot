@@ -1111,19 +1111,19 @@ module Optcarrot
       def build_loop(mdefs)
         dispatch = gen(
           "case @opcode",
-          *DISPATCH.map.with_index do |args, opcode|
-            if args.size > 1
-              mhd, instr, = args
-              code = expand_inline_methods("#{ mhd }(#{ args.drop(1).join(", ") })", mhd, mdefs[mhd])
-              code = code.gsub(/send\((\w+), (.*?)\)/) { "#{ $1 }(#{ $2 })" }
-              code = code.gsub(/send\((\w+)\)/) { $1 }
-              code = code[1..-2].split("; ")
-            else
-              instr = code = args[0]
-            end
-            "when 0x%02x # #{ instr }\n" % opcode + indent(2, gen(*code))
-          end,
-          "end"
+          # *DISPATCH.map.with_index do |args, opcode|
+          #   if args.size > 1
+          #     mhd, instr, = args
+          #     code = expand_inline_methods("#{ mhd }(#{ args.drop(1).join(", ") })", mhd, mdefs[mhd])
+          #     code = code.gsub(/send\((\w+), (.*?)\)/) { "#{ $1 }(#{ $2 })" }
+          #     code = code.gsub(/send\((\w+)\)/) { $1 }
+          #     code = code[1..-2].split("; ")
+          #   else
+          #     instr = code = args[0]
+          #   end
+          #   "when 0x%02x # #{ instr }\n" % opcode + indent(2, gen(*code))
+          # end,
+          # "end"
         )
         main = mdefs[:run].body.sub("@conf.loglevel >= 3") { @loglevel >= 3 }
         main.sub(/^ *send.*\n/) { indent(4, dispatch) }

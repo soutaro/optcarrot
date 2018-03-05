@@ -1300,7 +1300,7 @@ module Optcarrot
 
         code = gen(
           "def self.run",
-          *(@loglevel >= 3 ? ["  debug_logging(@scanline, @hclk, @hclk_target)"] : []),
+          # *(@loglevel >= 3 ? ["  debug_logging(@scanline, @hclk, @hclk_target)"] : []),
           indent(2, code),
           "end",
         )
@@ -1370,24 +1370,24 @@ module Optcarrot
           "if @any_show",
           "  if @sp_active",
           "    if @bg_enabled",
-          *(0..7).flat_map do |i|
-            [
-              "      pixel#{ i } = @bg_pixels[#{ i }]",
-              "      if sprite = @sp_map[@hclk#{ i != 0 ? " + #{ i }" : "" }]",
-              "        if pixel#{ i } % 4 == 0",
-              "          pixel#{ i } = sprite[2]",
-              "        else",
-              *(hclk + i == 255 ? [] : ["          @sp_zero_hit = true if sprite[1]"]),
-              "          pixel#{ i } = sprite[2] unless sprite[0]",
-              "        end",
-              "      end",
-            ]
-          end,
+          # *(0..7).flat_map do |i|
+          #   [
+          #     "      pixel#{ i } = @bg_pixels[#{ i }]",
+          #     "      if sprite = @sp_map[@hclk#{ i != 0 ? " + #{ i }" : "" }]",
+          #     "        if pixel#{ i } % 4 == 0",
+          #     "          pixel#{ i } = sprite[2]",
+          #     "        else",
+          #     *(hclk + i == 255 ? [] : ["          @sp_zero_hit = true if sprite[1]"]),
+          #     "          pixel#{ i } = sprite[2] unless sprite[0]",
+          #     "        end",
+          #     "      end",
+          #   ]
+          # end,
           "      @output_pixels << " + (0..7).map {|n| "@output_color[pixel#{ n }]" } * " << ",
           "    else",
-          *(0..7).map do |i|
-            "      pixel#{ i } = (sprite = @sp_map[@hclk #{ i != 0 ? " + #{ i }" : "" }]) ? sprite[2] : 0"
-          end,
+          # *(0..7).map do |i|
+          #   "      pixel#{ i } = (sprite = @sp_map[@hclk #{ i != 0 ? " + #{ i }" : "" }]) ? sprite[2] : 0"
+          # end,
           "      @output_pixels << " + (0..7).map {|n| "@output_color[pixel#{ n }]" } * " << ",
           "    end",
           "  else",
@@ -1433,9 +1433,9 @@ module Optcarrot
         gen(
           "while @hclk_target > @hclk",
           "  case @hclk",
-          *clauses.invert.sort.map do |hclks, handler|
-            "  when #{ hclks * ", " }\n" + indent(4, handler)
-          end,
+          # *clauses.invert.sort.map do |hclks, handler|
+          #   "  when #{ hclks * ", " }\n" + indent(4, handler)
+          # end,
           "  end",
           "end",
         )
