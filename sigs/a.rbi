@@ -315,8 +315,8 @@ class Optcarrot::CPU::OptimizedCodeBuilder
   @constant_inlining: any
   @ivar_localization: any
   def build: () -> String
-  def build_loop: (Hash<Symbol, any>) -> String
-  def cpu_expand_methods: (String, Hash<Symbol, any>) -> String
+  def build_loop: (Hash<Symbol, CodeOptimizationHelper::MethodDef | String>) -> String
+  def cpu_expand_methods: (String, Hash<Symbol, CodeOptimizationHelper::MethodDef | String>) -> String
   def expand_constants: (String) -> String
 end
 
