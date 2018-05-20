@@ -3,7 +3,7 @@ module Optcarrot
   module CodeOptimizationHelper
     def initialize(loglevel, enabled_opts)
       @loglevel = loglevel
-      options = self.class::OPTIONS
+      options = (_ = self.class::OPTIONS)
       opts = {}
       enabled_opts ||= [:all]
       default =
@@ -36,7 +36,7 @@ module Optcarrot
       if i > 0
         code.gsub(/^(.+)$/) { " " * i + $1 }
       elsif i < 0
-        code.gsub(/^ {#{ -i }}/, "")
+        code.gsub(/^ {#{ i * -1 }}/, "")
       else
         code
       end
@@ -53,7 +53,7 @@ module Optcarrot
       )
     end
 
-    MethodDef = Struct.new(:params, :body)
+    MethodDef = (_ = Struct.new(:params, :body))
 
     METHOD_DEFINITIONS_RE = /
       ^(\ +)def\s+(\w+)(?:\((.*)\))?\n
@@ -65,7 +65,7 @@ module Optcarrot
       src = File.read(file)
       mdefs = {}
       src.scan(METHOD_DEFINITIONS_RE) do |indent, meth, params, body|
-        body = indent(-indent.size - 2, body)
+        body = indent((0 - indent.size) - 2, body)
 
         # noramlize: break `when ... then`
         body = body.gsub(/^( *)when +(.*?) +then +(.*)/) { $1 + "when #{ $2 }\n" + $1 + "  " + $3 }
@@ -85,11 +85,16 @@ module Optcarrot
     def expand_methods(code, mdefs, meths = mdefs.keys)
       code.gsub(/^( *)\b(#{ meths * "|" })\b(?:\((.*?)\))?\n/) do
         indent, meth, args = $1, $2, $3
-        body = mdefs[meth.to_sym]
-        body = body.body if body.is_a?(MethodDef)
-        if args
-          mdefs[meth.to_sym].params.zip(args.split(", ")) do |param, arg|
-            body = replace_var(body, param, arg)
+        d = mdefs[meth.to_sym]
+        case d
+        when String
+          body = d
+        when MethodDef
+          body = d.body
+          if args
+            d.params.zip(args.split(", ")) do |param, arg|
+              body = replace_var(body, param, arg)
+            end
           end
         end
         indent(indent.size, body)

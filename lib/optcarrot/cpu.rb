@@ -109,6 +109,7 @@ module Optcarrot
     ###########################################################################
     # mapped memory API
 
+    # @type method add_mappings: (any, any, any) -> void
     def add_mappings(addr, peek, poke)
       # filter the logically equivalent objects
       peek = @peeks[peek] ||= peek
@@ -179,7 +180,7 @@ module Optcarrot
 
     def sprite_dma(addr, sp_ram)
       256.times {|i| sp_ram[i] = @ram[addr + i] }
-      64.times {|i| sp_ram[i * 4 + 2] = 0xe3 if spram[i * 4 + 2] }
+      64.times {|i| sp_ram[i * 4 + 2] = 0xe3 if sp_ram[i * 4 + 2] }
     end
 
     def boot
@@ -955,13 +956,24 @@ module Optcarrot
 
     def self.op(opcodes, args)
       opcodes.each do |opcode|
-        if args.is_a?(Array) && [:r_op, :w_op, :rw_op].include?(args[0])
-          kind, op, mode = args
-          mode = ADDRESSING_MODES[mode][opcode >> 2 & 7]
-          send_args = [kind, op, mode]
-          send_args << (mode.to_s.start_with?("zpg") ? :store_zpg : :store_mem) if kind != :r_op
-          DISPATCH[opcode] = send_args
+        case args
+        when Array
+          if [:r_op, :w_op, :rw_op].include?(_ = args[0])
+            # @type var kind: Symbol
+            # @type var op: Symbol
+            # @type var mode: Symbol
+            kind = (_ = args[0])
+            op = (_ = args[1])
+            mode = (_ = args[2])
+            mode = ADDRESSING_MODES[mode][opcode >> 2 & 7]
+            send_args = [kind, op, mode]
+            send_args << (mode.to_s.start_with?("zpg") ? :store_zpg : :store_mem) if kind != :r_op
+            DISPATCH[opcode] = send_args
+          else
+            DISPATCH[opcode] = [*args]
+          end
         else
+          # @type var args: Symbol
           DISPATCH[opcode] = [*args]
         end
       end
@@ -1125,7 +1137,9 @@ module Optcarrot
           # end,
           # "end"
         )
-        main = mdefs[:run].body.sub("@conf.loglevel >= 3") { @loglevel >= 3 }
+        # @type var main: String
+        main = mdefs[:run].body
+        main = main.sub("@conf.loglevel >= 3") { @loglevel >= 3 }
         main.sub(/^ *send.*\n/) { indent(4, dispatch) }
       end
 

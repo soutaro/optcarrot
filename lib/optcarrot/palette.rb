@@ -3,6 +3,9 @@ module Optcarrot
   module Palette
     module_function
 
+    # @dynamic self.defacto_palette
+    # @dynamic self.nestopia_palette
+
     # I don't know where this palette definition came from, but many emulators uses this
     def defacto_palette
       [
@@ -14,7 +17,8 @@ module Optcarrot
         [0.81, 0.71, 0.87], # emphasize RB
         [0.68, 0.79, 0.79], # emphasize GB
         [0.70, 0.70, 0.70], # emphasize RGB
-      ].flat_map do |rf, gf, bf|
+      ].flat_map do |f|
+        rf, gf, bf = f
         # RGB default palette (I don't know where this palette came from)
         [
           0x666666, 0x002a88, 0x1412a7, 0x3b00a4, 0x5c007e, 0x6e0040, 0x6c0600, 0x561d00,
@@ -55,7 +59,12 @@ module Optcarrot
             iq += Complex.polar(level1, Math::PI / 12 * ([0, 6, 10, 8, 2, 4, 0, 0][tint] * 2 - 7))
           end
         end
-        [[105, 0.570], [251, 0.351], [15, 1.015]].map do |angle, gain|
+        [[105, 0.570], [251, 0.351], [15, 1.015]].map do |pair|
+          # @type var angle: Integer
+          # @type var gain: Float
+          angle = (_ = pair[0])
+          gain = (_ = pair[1])
+
           clr = y + (Complex.polar(gain * 2, (angle - 33) * Math::PI / 180) * iq.conjugate).real
           [0, (clr * 255).round, 255].sort[1]
         end

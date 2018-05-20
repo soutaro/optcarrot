@@ -79,8 +79,8 @@ module Optcarrot
       setup_lut
     end
 
-    def reset(opt = {})
-      if opt.fetch(:mapping, true)
+    def reset(mapping: true)
+      if mapping
         # setup mapped memory
         @cpu.add_mappings(0x2000.step(0x3fff, 8), method(:peek_2xxx), method(:poke_2000))
         @cpu.add_mappings(0x2001.step(0x3fff, 8), method(:peek_2xxx), method(:poke_2001))
